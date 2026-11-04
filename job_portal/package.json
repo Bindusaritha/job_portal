@@ -1,0 +1,13 @@
+{
+  "name": "job-portal",
+  "version": "1.0.0",
+  "description": "Online Job Portal - Cyber-Dark Modern Full-Stack Web Application",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mysql8": "^2.17.3"
+  }
+}

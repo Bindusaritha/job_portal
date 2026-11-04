@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post New Job - JobSphere</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-container">
+
+    <!-- Top Navbar Header -->
+    <header class="site-header">
+        <a href="index.html" class="brand-container">
+            <div class="brand-logo-badge">⚡</div>
+            <div class="brand-text-wrap">
+                <span class="brand-title">JobSphere</span>
+                <span class="brand-tagline">Online Tech Career Portal</span>
+            </div>
+        </a>
+
+        <nav class="main-nav">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="list.html" class="nav-link">Explore Jobs</a>
+            <a href="listOne.html" class="nav-link">Find Job</a>
+            <a href="insert.html" class="nav-link active">Post Job</a>
+            <a href="update.html" class="nav-link">Update</a>
+            <a href="delete.html" class="nav-link">Close Job</a>
+        </nav>
+    </header>
+
+    <!-- Two-Column Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <div class="hero-badge">➕ TALENT RECRUITMENT</div>
+            <h1 class="hero-title"><span class="heading-gradient">Publish New</span> Job Vacancy</h1>
+            <p class="hero-subtitle">Attract top engineers and tech specialists by publishing verified roles with complete salary bands and clear requirements.</p>
+        </div>
+
+        <div class="hero-image-wrap">
+            <img src="images/insert.jpg" alt="Recruitment hiring meeting" class="hero-image">
+        </div>
+    </section>
+
+    <!-- Post Job Form Card -->
+    <div class="form-card">
+        <div class="form-group">
+            <label for="job_id" class="form-label">🏷️ Title of Job ID</label>
+            <input type="text" id="job_id" placeholder="e.g. JOB105" required>
+            <div class="form-hint">Unique identifier for this opening (e.g. JOB105, TECH-402)</div>
+        </div>
+
+        <div class="form-group">
+            <label for="company" class="form-label">🏢 Company Name</label>
+            <input type="text" id="company" placeholder="e.g. Uber, Netflix, Stripe" required>
+        </div>
+
+        <div class="form-group">
+            <label for="location" class="form-label">📍 Location / Work Model</label>
+            <input type="text" id="location" placeholder="e.g. Hyderabad / Hybrid, Remote, Bengaluru" required>
+        </div>
+
+        <div class="form-group">
+            <label for="salary" class="form-label">💰 Salary Package</label>
+            <input type="text" id="salary" placeholder="e.g. ₹25,00,000 / yr or $110,000" required>
+        </div>
+
+        <div class="form-group">
+            <label for="skills" class="form-label">⚡ Required Skills (comma-separated)</label>
+            <input type="text" id="skills" placeholder="e.g. React, Node.js, TypeScript, AWS" required>
+            <div class="form-hint">Enter tech skills separated by commas</div>
+        </div>
+
+        <div class="form-group">
+            <label for="interview_date" class="form-label">📅 Date of Interview</label>
+            <input type="date" id="interview_date" required>
+        </div>
+
+        <div class="form-group">
+            <label for="posts" class="form-label">👥 Number of Posts / Openings</label>
+            <input type="number" id="posts" placeholder="e.g. 5" min="1" required>
+        </div>
+
+        <div class="button-group">
+            <button class="btn" onclick="saveJob()">Publish Job 🚀</button>
+            <button class="btn btn-outline" onclick="location.href='list.html'">View All Jobs 📋</button>
+            <button class="btn btn-outline" onclick="location.href='index.html'">Home Page 🏠</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>© 2026 JobSphere – Next-Generation Online Job Portal</p>
+    </footer>
+
+</div>
+
+<script>
+function saveJob() {
+    const job_id = document.getElementById("job_id").value.trim();
+    const company = document.getElementById("company").value.trim();
+    const locationVal = document.getElementById("location").value.trim();
+    const salary = document.getElementById("salary").value.trim();
+    const skills = document.getElementById("skills").value.trim();
+    const interview_date = document.getElementById("interview_date").value;
+    const posts = document.getElementById("posts").value.trim();
+
+    if (!job_id || !company || !locationVal || !salary || !skills || !interview_date || !posts) {
+        alert("⚠️ Please fill in all 7 job fields before submitting.");
+        return;
+    }
+
+    fetch("/jobs", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            job_id: job_id,
+            company: company,
+            location: locationVal,
+            salary: salary,
+            skills: skills,
+            interview_date: interview_date,
+            posts: parseInt(posts, 10)
+        })
+    })
+    .then(res => {
+        if (!res.ok) {
+            return res.text().then(msg => { throw new Error(msg); });
+        }
+        return res.text();
+    })
+    .then(message => {
+        alert("✅ " + message);
+        location.href = "list.html";
+    })
+    .catch(err => {
+        alert("❌ Error: " + err.message);
+    });
+}
+</script>
+
+</body>
+</html>

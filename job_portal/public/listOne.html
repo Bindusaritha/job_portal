@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Job - JobSphere</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-container">
+
+    <!-- Top Navbar Header -->
+    <header class="site-header">
+        <a href="index.html" class="brand-container">
+            <div class="brand-logo-badge">⚡</div>
+            <div class="brand-text-wrap">
+                <span class="brand-title">JobSphere</span>
+                <span class="brand-tagline">Online Tech Career Portal</span>
+            </div>
+        </a>
+
+        <nav class="main-nav">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="list.html" class="nav-link">Explore Jobs</a>
+            <a href="listOne.html" class="nav-link active">Find Job</a>
+            <a href="insert.html" class="nav-link">Post Job</a>
+            <a href="update.html" class="nav-link">Update</a>
+            <a href="delete.html" class="nav-link">Close Job</a>
+        </nav>
+    </header>
+
+    <!-- Two-Column Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <div class="hero-badge">🔍 RECRUITMENT LOOKUP</div>
+            <h1 class="hero-title"><span class="heading-gradient">Search Job</span> by ID</h1>
+            <p class="hero-subtitle">Select any Job ID from the dropdown to instantly view the complete compensation breakdown, tech stack requirements, and interview dates.</p>
+        </div>
+
+        <div class="hero-image-wrap">
+            <img src="images/search.jpg" alt="Developer searching opportunities on laptop" class="hero-image">
+        </div>
+    </section>
+
+    <!-- Search Form Card -->
+    <div class="form-card">
+        <div class="form-group">
+            <label for="job_id" class="form-label">💼 Select Job ID</label>
+            <select id="job_id" onchange="autoSearch()">
+                <option value="">Select Job ID</option>
+            </select>
+            <div class="form-hint">Choose a registered job ID to load full hiring details</div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn" onclick="searchJob()">Search Job 🔍</button>
+            <button class="btn btn-outline" onclick="location.href='index.html'">Home Page 🏠</button>
+        </div>
+    </div>
+
+    <!-- Dynamic Job Detail Display -->
+    <div id="jobResultContainer" style="display: none;">
+        <div class="job-preview-card">
+            <div class="job-preview-header">
+                <div>
+                    <span class="badge-job-id" id="resJobId">JOB101</span>
+                    <div class="preview-company" id="resCompany">Company</div>
+                    <div style="color: var(--text-muted); font-size: 13.5px; margin-top: 4px;" id="resLocation">📍 Location</div>
+                </div>
+                <div style="text-align: right;">
+                    <div class="badge-salary" style="font-size: 15px; padding: 6px 14px;" id="resSalary">₹28 LPA</div>
+                    <div style="margin-top: 6px;">
+                        <span class="badge-posts" id="resPosts">5 Openings</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="preview-grid">
+                <div>
+                    <div class="preview-field-label">Required Tech Stack / Skills</div>
+                    <div class="skills-tags" id="resSkills" style="margin-top: 6px;"></div>
+                </div>
+                <div>
+                    <div class="preview-field-label">Interview Date</div>
+                    <div class="preview-field-val" id="resDate">📅 2026-11-05</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fallback Table View -->
+    <div class="table-container" id="tableContainer" style="display: none;">
+        <table id="singleJobTable">
+            <thead>
+                <tr>
+                    <th>Job ID</th>
+                    <th>Company</th>
+                    <th>Location</th>
+                    <th>Salary</th>
+                    <th>Skills</th>
+                    <th>Interview Date</th>
+                    <th>Posts</th>
+                </tr>
+            </thead>
+            <tbody id="singleJobBody"></tbody>
+        </table>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>© 2026 JobSphere – Next-Generation Online Job Portal</p>
+    </footer>
+
+</div>
+
+<script>
+// Load Job IDs dynamically into the dropdown on page load
+function loadJobIds() {
+    fetch("/jobs")
+        .then(res => res.json())
+        .then(jobs => {
+            const select = document.getElementById("job_id");
+            select.innerHTML = '<option value="">Select Job ID</option>';
+            jobs.forEach(job => {
+                const opt = document.createElement("option");
+                opt.value = job.job_id;
+                opt.textContent = job.job_id;
+                select.appendChild(opt);
+            });
+        })
+        .catch(err => console.error("Error loading job IDs:", err));
+}
+loadJobIds();
+
+function autoSearch() {
+    const val = document.getElementById("job_id").value;
+    if (val) {
+        searchJob();
+    }
+}
+
+function searchJob() {
+    const id = document.getElementById("job_id").value;
+    if (!id) {
+        alert("Please select a Job ID");
+        return;
+    }
+
+    fetch("/jobs/" + encodeURIComponent(id))
+        .then(res => {
+            if (!res.ok) throw new Error("Job Not Found");
+            return res.json();
+        })
+        .then(data => {
+            if (!data || data.length === 0) {
+                alert("Job Not Found");
+                return;
+            }
+            const job = data[0];
+
+            // Render rich card preview
+            document.getElementById("resJobId").textContent = job.job_id;
+            document.getElementById("resCompany").textContent = job.company;
+            document.getElementById("resLocation").textContent = "📍 " + job.location;
+            document.getElementById("resSalary").textContent = "💰 " + job.salary;
+            document.getElementById("resPosts").textContent = "👥 " + job.posts + " Vacancies";
+            document.getElementById("resDate").textContent = "📅 " + (job.interview_date || "TBD");
+
+            const skillsWrap = document.getElementById("resSkills");
+            const skillsArr = (job.skills || "").split(",").map(s => s.trim()).filter(s => s);
+            skillsWrap.innerHTML = skillsArr.map(s => `<span class="skill-tag">${s}</span>`).join(" ");
+
+            document.getElementById("jobResultContainer").style.display = "block";
+
+            // Render table row
+            const body = document.getElementById("singleJobBody");
+            body.innerHTML = `
+                <tr>
+                    <td><span class="badge-job-id">${job.job_id}</span></td>
+                    <td><b>${job.company}</b></td>
+                    <td>📍 ${job.location}</td>
+                    <td><span class="badge-salary">${job.salary}</span></td>
+                    <td>${skillsArr.map(s => `<span class="skill-tag">${s}</span>`).join(" ")}</td>
+                    <td>📅 ${job.interview_date}</td>
+                    <td><span class="badge-posts">${job.posts} Posts</span></td>
+                </tr>
+            `;
+            document.getElementById("tableContainer").style.display = "block";
+        })
+        .catch(err => {
+            alert(err.message);
+        });
+}
+</script>
+
+</body>
+</html>

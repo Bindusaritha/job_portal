@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Close Job - JobSphere</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-container">
+
+    <!-- Top Navbar Header -->
+    <header class="site-header">
+        <a href="index.html" class="brand-container">
+            <div class="brand-logo-badge">⚡</div>
+            <div class="brand-text-wrap">
+                <span class="brand-title">JobSphere</span>
+                <span class="brand-tagline">Online Tech Career Portal</span>
+            </div>
+        </a>
+
+        <nav class="main-nav">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="list.html" class="nav-link">Explore Jobs</a>
+            <a href="listOne.html" class="nav-link">Find Job</a>
+            <a href="insert.html" class="nav-link">Post Job</a>
+            <a href="update.html" class="nav-link">Update</a>
+            <a href="delete.html" class="nav-link active">Close Job</a>
+        </nav>
+    </header>
+
+    <!-- Two-Column Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <div class="hero-badge" style="color: var(--rose); background: var(--rose-bg); border-color: rgba(244, 63, 94, 0.3);">
+                🗑️ ARCHIVE &amp; PURGE
+            </div>
+            <h1 class="hero-title"><span class="heading-gradient" style="background: linear-gradient(135deg, #FFFFFF, var(--rose)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Close / Remove</span> Job</h1>
+            <p class="hero-subtitle">Safely delist and remove expired or fulfilled engineering vacancies from the live recruitment board.</p>
+        </div>
+
+        <div class="hero-image-wrap" style="border-color: rgba(244, 63, 94, 0.4); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(244, 63, 94, 0.15);">
+            <img src="images/delete.jpg" alt="Organized files and archived records" class="hero-image">
+        </div>
+    </section>
+
+    <!-- Delete Form Card -->
+    <div class="form-card">
+        <div class="form-group">
+            <label for="job_id" class="form-label">💼 Select Job ID to Delete</label>
+            <select id="job_id" onchange="previewDelete()">
+                <option value="">Select Job ID</option>
+            </select>
+            <div class="form-hint">Warning: Delisting a job permanently purges it from the database</div>
+        </div>
+
+        <!-- Selected Job Info Banner -->
+        <div id="deletePreview" style="display: none; background: rgba(244, 63, 94, 0.08); border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 12px; padding: 16px; margin-bottom: 22px;">
+            <div style="font-weight: 700; color: #FFFFFF;" id="delCompany">Company</div>
+            <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;" id="delDetails">Location • Salary</div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-danger" onclick="deleteJob()">Permanently Delete Job 🗑️</button>
+            <button class="btn btn-outline" onclick="location.href='list.html'">View All Jobs 📋</button>
+            <button class="btn btn-outline" onclick="location.href='index.html'">Home Page 🏠</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>© 2026 JobSphere – Next-Generation Online Job Portal</p>
+    </footer>
+
+</div>
+
+<script>
+let cachedJobs = [];
+
+// Populate Job IDs dropdown from /jobs
+function loadJobIds() {
+    fetch("/jobs")
+        .then(res => res.json())
+        .then(jobs => {
+            cachedJobs = jobs;
+            const select = document.getElementById("job_id");
+            select.innerHTML = '<option value="">Select Job ID</option>';
+            jobs.forEach(job => {
+                const opt = document.createElement("option");
+                opt.value = job.job_id;
+                opt.textContent = job.job_id;
+                select.appendChild(opt);
+            });
+        })
+        .catch(err => console.error("Error loading job IDs:", err));
+}
+loadJobIds();
+
+function previewDelete() {
+    const id = document.getElementById("job_id").value;
+    const box = document.getElementById("deletePreview");
+    const selected = cachedJobs.find(j => j.job_id === id);
+
+    if (selected) {
+        document.getElementById("delCompany").textContent = `🏢 ${selected.company} (${selected.job_id})`;
+        document.getElementById("delDetails").textContent = `📍 ${selected.location} • 💰 ${selected.salary} • 👥 ${selected.posts} Posts`;
+        box.style.display = "block";
+    } else {
+        box.style.display = "none";
+    }
+}
+
+function deleteJob() {
+    const id = document.getElementById("job_id").value;
+
+    if (!id) {
+        alert("⚠️ Please select a Job ID to delete.");
+        return;
+    }
+
+    if (!confirm(`Are you sure you want to permanently delete job opening ${id}? This cannot be undone.`)) {
+        return;
+    }
+
+    fetch("/jobs/" + encodeURIComponent(id), {
+        method: "DELETE"
+    })
+    .then(res => {
+        if (!res.ok) {
+            return res.text().then(msg => { throw new Error(msg); });
+        }
+        return res.text();
+    })
+    .then(message => {
+        alert("✅ " + message);
+        location.href = "list.html";
+    })
+    .catch(err => {
+        alert("❌ Error: " + err.message);
+    });
+}
+</script>
+
+</body>
+</html>

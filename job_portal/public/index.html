@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobSphere - Online Tech Job Portal</title>
+    <!-- Shared Cyber-Dark Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-container">
+
+    <!-- Top Navbar Header -->
+    <header class="site-header">
+        <a href="index.html" class="brand-container">
+            <div class="brand-logo-badge">⚡</div>
+            <div class="brand-text-wrap">
+                <span class="brand-title">JobSphere</span>
+                <span class="brand-tagline">Online Tech Career Portal</span>
+            </div>
+        </a>
+
+        <nav class="main-nav">
+            <a href="index.html" class="nav-link active">Home</a>
+            <a href="list.html" class="nav-link">Explore Jobs</a>
+            <a href="listOne.html" class="nav-link">Find Job</a>
+            <a href="insert.html" class="nav-link">Post Job</a>
+            <a href="update.html" class="nav-link">Update</a>
+            <a href="delete.html" class="nav-link">Close Job</a>
+        </nav>
+    </header>
+
+    <!-- Two-Column Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="live-dot"></span>
+                <span>💼 Tech Talent Network</span>
+            </div>
+            
+            <h1 class="hero-title">
+                Find &amp; Manage High-Impact <span class="heading-gradient">Tech Careers.</span>
+            </h1>
+            
+            <p class="hero-subtitle">
+                A unified, modern recruitment dashboard for discovering elite engineering roles, posting new vacancies, tracking interviews, and managing hiring pipelines.
+            </p>
+
+            <div class="hero-stats-row">
+                <div class="stat-item">
+                    <span class="stat-num" id="activeJobsCount">4+</span>
+                    <span class="stat-label">Active Openings</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-num">Top Tier</span>
+                    <span class="stat-label">Google, Amazon, MS</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-num">100%</span>
+                    <span class="stat-label">Verified Postings</span>
+                </div>
+            </div>
+
+            <div class="hero-cta">
+                <button class="btn" onclick="location.href='list.html'">Explore All Jobs →</button>
+                <button class="btn btn-outline" onclick="location.href='insert.html'">📢 Post a Vacancy</button>
+            </div>
+        </div>
+
+        <div class="hero-image-wrap">
+            <img src="images/home.jpg" alt="Collaborative Tech Engineering Team" class="hero-image">
+        </div>
+    </section>
+
+    <!-- Job Workspace Section -->
+    <section class="workspace-section">
+        <div class="section-header">
+            <h2 class="section-title">Career Workspace</h2>
+            <p class="section-subtitle">Select a management action below to navigate the portal.</p>
+        </div>
+
+        <div class="workspace-grid">
+            <button class="workspace-card card-cyan" onclick="location.href='list.html'">
+                <div class="card-icon">💼</div>
+                <div class="card-title">Explore Live Roles</div>
+                <div class="card-desc">Browse complete directory of live vacancies and salaries.</div>
+            </button>
+
+            <button class="workspace-card card-indigo" onclick="location.href='listOne.html'">
+                <div class="card-icon">🎯</div>
+                <div class="card-title">Find Role by ID</div>
+                <div class="card-desc">Search specific role details and interview schedules.</div>
+            </button>
+
+            <button class="workspace-card card-emerald" onclick="location.href='insert.html'">
+                <div class="card-icon">📢</div>
+                <div class="card-title">Publish New Opening</div>
+                <div class="card-desc">Publish a new role with required skills and package.</div>
+            </button>
+
+            <button class="workspace-card card-amber" onclick="location.href='update.html'">
+                <div class="card-icon">⚙️</div>
+                <div class="card-title">Revise Job Listing</div>
+                <div class="card-desc">Modify salary, vacancies, or interview schedule.</div>
+            </button>
+
+            <button class="workspace-card card-rose" onclick="location.href='delete.html'">
+                <div class="card-icon">🛑</div>
+                <div class="card-title">Close &amp; Archive Role</div>
+                <div class="card-desc">Safely remove filled positions from the portal.</div>
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>© 2026 JobSphere – Next-Generation Online Job Portal</p>
+    </footer>
+
+</div>
+
+<script>
+// Fetch live job count for the hero stats
+fetch("/jobs")
+    .then(res => res.json())
+    .then(data => {
+        if (data && data.length) {
+            document.getElementById("activeJobsCount").textContent = data.length + " Live";
+        }
+    })
+    .catch(err => console.log("Hero stats:", err));
+</script>
+
+</body>
+</html>
